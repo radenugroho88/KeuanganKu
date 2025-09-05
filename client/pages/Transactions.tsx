@@ -1,36 +1,10 @@
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-
-type Tx = {
-  id: string;
-  date: string;
-  description: string;
-  category: string;
-  amount: number;
-  type: "income" | "expense";
-};
+import { useFinance } from "@/lib/finance";
+import { useState, useMemo } from "react";
 
 export default function Transactions() {
-  const [items, setItems] = useState<Tx[]>(() => {
-    return [
-      {
-        id: "1",
-        date: "2025-08-01",
-        description: "Gaji Bulanan",
-        category: "Pendapatan",
-        amount: 15000000,
-        type: "income",
-      },
-      {
-        id: "2",
-        date: "2025-08-03",
-        description: "Belanja bulanan",
-        category: "Belanja",
-        amount: 1200000,
-        type: "expense",
-      },
-    ];
-  });
+  const { entries, addEntry, clearEntries, removeEntry } = useFinance();
 
   const [form, setForm] = useState({
     date: "",
@@ -41,18 +15,15 @@ export default function Transactions() {
   });
 
   const total = useMemo(
-    () => items.reduce((acc, it) => acc + (it.type === "income" ? it.amount : -it.amount), 0),
-    [items],
+    () => entries.reduce((acc, it) => acc + (it.type === "income" ? it.amount : -it.amount), 0),
+    [entries],
   );
 
   const add = (e: React.FormEvent) => {
     e.preventDefault();
     const amt = Number(form.amount || 0);
     if (!form.date || !form.description || !form.category || !amt) return;
-    setItems((s) => [
-      ...s,
-      { id: String(Date.now()), date: form.date, description: form.description, category: form.category, amount: amt, type: form.type as any },
-    ]);
+    addEntry({ date: form.date, description: form.description, category: form.category, amount: amt, type: form.type as any });
     setForm({ date: "", description: "", category: "", amount: "", type: "expense" });
   };
 
@@ -91,7 +62,7 @@ export default function Transactions() {
         <div className="md:col-span-6">
           <div className="flex gap-2 mt-2">
             <Button type="submit">Tambah Transaksi</Button>
-            <Button variant="outline" onClick={()=>{ setItems([]); }}>Kosongkan</Button>
+            <Button variant="outline" onClick={()=>{ clearEntries(); }}>Kosongkan</Button>
           </div>
         </div>
       </form>
@@ -104,10 +75,11 @@ export default function Transactions() {
               <th className="p-2">Deskripsi</th>
               <th className="p-2">Kategori</th>
               <th className="p-2">Jumlah</th>
+              <th className="p-2">Aksi</th>
             </tr>
           </thead>
           <tbody>
-            {items.map((it) => (
+            {entries.map((it) => (
               <tr key={it.id} className="border-t">
                 <td className="p-2">{it.date}</td>
                 <td className="p-2">{it.description}</td>
@@ -115,6 +87,7 @@ export default function Transactions() {
                 <td className={`p-2 font-medium ${it.type === "income" ? "text-emerald-600" : "text-rose-600"}`}>
                   {new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(it.amount)}
                 </td>
+                <td className="p-2"><Button variant="ghost" onClick={()=>removeEntry(it.id)}>Hapus</Button></td>
               </tr>
             ))}
           </tbody>
