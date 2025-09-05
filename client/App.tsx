@@ -43,4 +43,14 @@ const App = () => (
   </QueryClientProvider>
 );
 
-createRoot(document.getElementById("root")!).render(<App />);
+const mount = async () => {
+  const container = document.getElementById("root")!;
+  // reuse existing root during HMR to avoid calling createRoot multiple times
+  const anyWindow = window as any;
+  if (!anyWindow.__REACT_ROOT__) {
+    anyWindow.__REACT_ROOT__ = createRoot(container);
+  }
+  anyWindow.__REACT_ROOT__.render(<App />);
+};
+
+mount();
