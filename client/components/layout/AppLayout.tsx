@@ -5,6 +5,7 @@ export default function AppLayout() {
   const navItems = [
     { label: "Dasbor", to: "/" },
     { label: "Transaksi", to: "/transactions" },
+    { label: "Input Data", to: "/input-data" },
     { label: "Laporan", to: "/reports" },
     { label: "Anggaran", to: "/budgets" },
     { label: "Pengaturan", to: "/settings" },
