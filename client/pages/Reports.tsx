@@ -3,32 +3,30 @@ import IncomeChart from "@/components/charts/IncomeChart";
 import ExpenseChart from "@/components/charts/ExpenseChart";
 import { Button } from "@/components/ui/button";
 import { downloadCSV, downloadXLSX } from "@/lib/export";
+import { useFinance } from "@/lib/finance";
+
+const MONTH_NAMES = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
 
 export default function Reports(){
-  const pendapatan = useMemo(()=>[
-    { bulan: 'Jan', jumlah: 12000000 },
-    { bulan: 'Feb', jumlah: 12500000 },
-    { bulan: 'Mar', jumlah: 13000000 },
-    { bulan: 'Apr', jumlah: 12800000 },
-    { bulan: 'Mei', jumlah: 15000000 },
-    { bulan: 'Jun', jumlah: 14500000 },
-    { bulan: 'Jul', jumlah: 15500000 },
-    { bulan: 'Agu', jumlah: 16000000 },
-    { bulan: 'Sep', jumlah: 16200000 },
-    { bulan: 'Okt', jumlah: 16800000 },
-    { bulan: 'Nov', jumlah: 17000000 },
-    { bulan: 'Des', jumlah: 18000000 },
-  ],[]);
+  const { incomes, expenses } = useFinance();
 
-  const pengeluaran = useMemo(()=>[
-    { kategori: 'Makan & Minum', jumlah: 3500000 },
-    { kategori: 'Transportasi', jumlah: 1200000 },
-    { kategori: 'Sewa/Rumah', jumlah: 5000000 },
-    { kategori: 'Hiburan', jumlah: 1000000 },
-    { kategori: 'Kesehatan', jumlah: 750000 },
-    { kategori: 'Belanja', jumlah: 1500000 },
-    { kategori: 'Lainnya', jumlah: 800000 },
-  ],[]);
+  const pendapatan = useMemo(()=>{
+    const map = new Map<string, number>();
+    incomes.forEach(i=>{
+      const m = new Date(i.date).getMonth();
+      const key = MONTH_NAMES[m] || String(m+1);
+      map.set(key, (map.get(key)||0) + i.amount);
+    });
+    return Array.from(map.entries()).map(([bulan,jumlah])=>({bulan,jumlah}));
+  },[incomes]);
+
+  const pengeluaran = useMemo(()=>{
+    const map = new Map<string, number>();
+    expenses.forEach(e=>{
+      map.set(e.category, (map.get(e.category)||0) + e.amount);
+    });
+    return Array.from(map.entries()).map(([kategori,jumlah])=>({kategori,jumlah}));
+  },[expenses]);
 
   return (
     <div className="space-y-6">
