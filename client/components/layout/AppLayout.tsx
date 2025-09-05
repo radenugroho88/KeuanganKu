@@ -18,7 +18,9 @@ export default function AppLayout() {
           <div className="flex items-center gap-6">
             <Link to="/" className="flex items-center gap-3">
               <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-emerald-500 to-sky-500 shadow" />
-              <span className="text-lg font-bold tracking-tight">KeuanganKu</span>
+              <span className="text-lg font-bold tracking-tight">
+                KeuanganKu
+              </span>
             </Link>
 
             <nav className="hidden md:flex items-center gap-2">

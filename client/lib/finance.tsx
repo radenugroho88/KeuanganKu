@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 export type FinanceEntry = {
   id: string;
@@ -31,11 +37,15 @@ type FinanceContextValue = {
   removeInventory: (id: string) => void;
 };
 
-const FinanceContext = createContext<FinanceContextValue | undefined>(undefined);
+const FinanceContext = createContext<FinanceContextValue | undefined>(
+  undefined,
+);
 
 const STORAGE_KEY = "keuanganku_data_v1";
 
-export const FinanceProvider: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
+export const FinanceProvider: React.FC<{ children?: React.ReactNode }> = ({
+  children,
+}) => {
   const [entries, setEntries] = useState<FinanceEntry[]>(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -68,7 +78,8 @@ export const FinanceProvider: React.FC<{ children?: React.ReactNode }> = ({ chil
     setEntries((s) => [entry, ...s]);
   };
 
-  const removeEntry = (id: string) => setEntries((s) => s.filter((x) => x.id !== id));
+  const removeEntry = (id: string) =>
+    setEntries((s) => s.filter((x) => x.id !== id));
   const clearEntries = () => setEntries([]);
 
   const addInventory = (it: Omit<InventoryItem, "id">) => {
@@ -77,15 +88,23 @@ export const FinanceProvider: React.FC<{ children?: React.ReactNode }> = ({ chil
   };
   const updateInventory = (id: string, patch: Partial<InventoryItem>) =>
     setInventory((s) => s.map((i) => (i.id === id ? { ...i, ...patch } : i)));
-  const removeInventory = (id: string) => setInventory((s) => s.filter((i) => i.id !== id));
+  const removeInventory = (id: string) =>
+    setInventory((s) => s.filter((i) => i.id !== id));
 
-  const incomes = useMemo(() => entries.filter((e) => e.type === "income"), [entries]);
-  const expenses = useMemo(() => entries.filter((e) => e.type === "expense"), [entries]);
+  const incomes = useMemo(
+    () => entries.filter((e) => e.type === "income"),
+    [entries],
+  );
+  const expenses = useMemo(
+    () => entries.filter((e) => e.type === "expense"),
+    [entries],
+  );
 
   const totalsByCategory = useMemo(() => {
     const map: Record<string, number> = {};
     entries.forEach((e) => {
-      map[e.category] = (map[e.category] || 0) + (e.type === "income" ? e.amount : e.amount);
+      map[e.category] =
+        (map[e.category] || 0) + (e.type === "income" ? e.amount : e.amount);
     });
     return map;
   }, [entries]);
@@ -98,7 +117,20 @@ export const FinanceProvider: React.FC<{ children?: React.ReactNode }> = ({ chil
 
   return (
     <FinanceContext.Provider
-      value={{ entries, addEntry, removeEntry, clearEntries, totalsByCategory, incomes, expenses, profitLoss, inventory, addInventory, updateInventory, removeInventory }}
+      value={{
+        entries,
+        addEntry,
+        removeEntry,
+        clearEntries,
+        totalsByCategory,
+        incomes,
+        expenses,
+        profitLoss,
+        inventory,
+        addInventory,
+        updateInventory,
+        removeInventory,
+      }}
     >
       {children}
     </FinanceContext.Provider>

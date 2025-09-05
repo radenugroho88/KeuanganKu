@@ -6,28 +6,47 @@ import { downloadCSV, downloadXLSX } from "@/lib/export";
 import { useMemo } from "react";
 import { useFinance } from "@/lib/finance";
 
-const MONTH_NAMES = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+const MONTH_NAMES = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "Mei",
+  "Jun",
+  "Jul",
+  "Agu",
+  "Sep",
+  "Okt",
+  "Nov",
+  "Des",
+];
 
 export default function Index() {
   const { incomes, expenses, profitLoss } = useFinance();
 
   const pendapatan = useMemo(() => {
     const map = new Map<string, number>();
-    incomes.forEach(i => {
+    incomes.forEach((i) => {
       const m = new Date(i.date).getMonth();
-      const key = MONTH_NAMES[m] || String(m+1);
+      const key = MONTH_NAMES[m] || String(m + 1);
       map.set(key, (map.get(key) || 0) + i.amount);
     });
-    return Array.from(map.entries()).map(([bulan,jumlah])=>({bulan,jumlah}));
+    return Array.from(map.entries()).map(([bulan, jumlah]) => ({
+      bulan,
+      jumlah,
+    }));
   }, [incomes]);
 
-  const pengeluaran = useMemo(()=>{
+  const pengeluaran = useMemo(() => {
     const map = new Map<string, number>();
-    expenses.forEach(e=>{
-      map.set(e.category, (map.get(e.category)||0) + e.amount);
+    expenses.forEach((e) => {
+      map.set(e.category, (map.get(e.category) || 0) + e.amount);
     });
-    return Array.from(map.entries()).map(([kategori,jumlah])=>({kategori,jumlah}));
-  },[expenses]);
+    return Array.from(map.entries()).map(([kategori, jumlah]) => ({
+      kategori,
+      jumlah,
+    }));
+  }, [expenses]);
 
   return (
     <div className="space-y-8">
@@ -41,7 +60,10 @@ export default function Index() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => downloadCSV(pendapatan, pengeluaran)}>
+          <Button
+            variant="outline"
+            onClick={() => downloadCSV(pendapatan, pengeluaran)}
+          >
             Unduh CSV
           </Button>
           <Button onClick={() => downloadXLSX(pendapatan, pengeluaran)}>
@@ -66,7 +88,14 @@ export default function Index() {
           </CardHeader>
           <CardContent>
             <ExpenseChart data={pengeluaran as any} />
-            <div className="mt-4 font-medium">Laba / Rugi: {new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(profitLoss)}</div>
+            <div className="mt-4 font-medium">
+              Laba / Rugi:{" "}
+              {new Intl.NumberFormat("id-ID", {
+                style: "currency",
+                currency: "IDR",
+                maximumFractionDigits: 0,
+              }).format(profitLoss)}
+            </div>
           </CardContent>
         </Card>
       </div>
