@@ -1,61 +1,81 @@
-import { DemoResponse } from "@shared/api";
-import { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import IncomeChart, { IncomeDatum } from "@/components/charts/IncomeChart";
+import ExpenseChart, { ExpenseDatum } from "@/components/charts/ExpenseChart";
+import { Button } from "@/components/ui/button";
+import { downloadCSV, downloadXLSX } from "@/lib/export";
+import { useMemo } from "react";
 
 export default function Index() {
-  const [exampleFromServer, setExampleFromServer] = useState("");
-  // Fetch users on component mount
-  useEffect(() => {
-    fetchDemo();
-  }, []);
+  const pendapatan: IncomeDatum[] = useMemo(
+    () => [
+      { bulan: "Jan", jumlah: 12000000 },
+      { bulan: "Feb", jumlah: 12500000 },
+      { bulan: "Mar", jumlah: 13000000 },
+      { bulan: "Apr", jumlah: 12800000 },
+      { bulan: "Mei", jumlah: 15000000 },
+      { bulan: "Jun", jumlah: 14500000 },
+      { bulan: "Jul", jumlah: 15500000 },
+      { bulan: "Agu", jumlah: 16000000 },
+      { bulan: "Sep", jumlah: 16200000 },
+      { bulan: "Okt", jumlah: 16800000 },
+      { bulan: "Nov", jumlah: 17000000 },
+      { bulan: "Des", jumlah: 18000000 },
+    ],
+    [],
+  );
 
-  // Example of how to fetch data from the server (if needed)
-  const fetchDemo = async () => {
-    try {
-      const response = await fetch("/api/demo");
-      const data = (await response.json()) as DemoResponse;
-      setExampleFromServer(data.message);
-    } catch (error) {
-      console.error("Error fetching hello:", error);
-    }
-  };
+  const pengeluaran: ExpenseDatum[] = useMemo(
+    () => [
+      { kategori: "Makan & Minum", jumlah: 3500000 },
+      { kategori: "Transportasi", jumlah: 1200000 },
+      { kategori: "Sewa/Rumah", jumlah: 5000000 },
+      { kategori: "Hiburan", jumlah: 1000000 },
+      { kategori: "Kesehatan", jumlah: 750000 },
+      { kategori: "Belanja", jumlah: 1500000 },
+      { kategori: "Lainnya", jumlah: 800000 },
+    ],
+    [],
+  );
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
-      <div className="text-center">
-        {/* TODO: FUSION_GENERATION_APP_PLACEHOLDER replace everything here with the actual app! */}
-        <h1 className="text-2xl font-semibold text-slate-800 flex items-center justify-center gap-3">
-          <svg
-            className="animate-spin h-8 w-8 text-slate-400"
-            viewBox="0 0 50 50"
-          >
-            <circle
-              className="opacity-30"
-              cx="25"
-              cy="25"
-              r="20"
-              stroke="currentColor"
-              strokeWidth="5"
-              fill="none"
-            />
-            <circle
-              className="text-slate-600"
-              cx="25"
-              cy="25"
-              r="20"
-              stroke="currentColor"
-              strokeWidth="5"
-              fill="none"
-              strokeDasharray="100"
-              strokeDashoffset="75"
-            />
-          </svg>
-          Generating your app...
-        </h1>
-        <p className="mt-4 text-slate-600 max-w-md">
-          Watch the chat on the left for updates that might need your attention
-          to finish generating
-        </p>
-        <p className="mt-4 hidden max-w-md">{exampleFromServer}</p>
+    <div className="space-y-8">
+      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-emerald-600 to-sky-600 bg-clip-text text-transparent">
+            Dasbor Keuangan
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Ringkasan finansial Anda dalam sekejap.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => downloadCSV(pendapatan, pengeluaran)}>
+            Unduh CSV
+          </Button>
+          <Button onClick={() => downloadXLSX(pendapatan, pengeluaran)}>
+            Unduh XLSX
+          </Button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="backdrop-blur bg-white/70 dark:bg-zinc-900/70">
+          <CardHeader>
+            <CardTitle>Pendapatan per Bulan</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <IncomeChart data={pendapatan} />
+          </CardContent>
+        </Card>
+
+        <Card className="backdrop-blur bg-white/70 dark:bg-zinc-900/70">
+          <CardHeader>
+            <CardTitle>Pengeluaran per Kategori</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ExpenseChart data={pengeluaran} />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
