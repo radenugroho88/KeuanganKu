@@ -125,7 +125,19 @@ export default function InputData() {
       <div className="rounded-md border bg-card p-6">
         <h3 className="font-medium mb-4">Ringkasan Per Kategori</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Totals will be rendered by Reports/dashboard from context, here we just show quick summary */}
+          {Object.entries(
+            entries.reduce((acc, e) => {
+              acc[e.category] = (acc[e.category] || 0) + (e.type === "income" ? e.amount : e.amount);
+              return acc;
+            }, {} as Record<string, number>),
+          )
+            .slice(0, 9)
+            .map(([k, v]) => (
+              <div key={k} className="rounded-md border bg-white/50 p-3">
+                <div className="text-sm text-muted-foreground">{k}</div>
+                <div className="font-medium">{new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(v)}</div>
+              </div>
+            ))}
         </div>
       </div>
     </div>
