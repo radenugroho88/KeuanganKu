@@ -1,7 +1,6 @@
-import { useMemo, useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { useFinance } from "@/lib/finance";
-import { useState, useMemo } from "react";
 
 export default function Transactions() {
   const { entries, addEntry, clearEntries, removeEntry } = useFinance();
